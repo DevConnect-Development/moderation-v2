@@ -46,24 +46,6 @@ export default class extends Command {
                         .setDescription("The reason for the mute.")
                         .setRequired(true)
                 )
-                .addStringOption((option) =>
-                    option
-                        .setName("--noname")
-                        .setDescription(
-                            "Hide your name from the user mute embed."
-                        )
-                        .addChoices(
-                            {
-                                name: "True",
-                                value: "hide",
-                            },
-                            {
-                                name: "False",
-                                value: "show",
-                            }
-                        )
-                        .setRequired(false)
-                )
                 .setDefaultMemberPermissions(
                     PermissionFlagsBits.ModerateMembers
                 )
@@ -80,7 +62,6 @@ export default class extends Command {
         const selectedUser = interaction.options.getUser("user");
         const selectedTime = interaction.options.getString("time");
         const selectedReason = interaction.options.getString("reason");
-        const noNameOption = interaction.options.getString("--noname");
 
         // Parameter Check
         if (!selectedUser || !selectedTime || !selectedReason) {
@@ -149,16 +130,6 @@ export default class extends Command {
                 ].join("\n")
             )
             .setColor("Red");
-
-        if (noNameOption === "show") {
-            muteEmbed.setFooter({
-                text: `From: @${interaction.user.username} (${interaction.user.id})`,
-                iconURL: `${
-                    currentMember.displayAvatarURL() ||
-                    interaction.user.displayAvatarURL()
-                }`,
-            });
-        }
 
         // Modlog Embed
         const userSelect = createUserSelect([

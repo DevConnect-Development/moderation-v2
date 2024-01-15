@@ -1,5 +1,7 @@
 // Dependencies
 import mongoose from "mongoose";
+import moment from "moment";
+
 import { Command } from "@sapphire/framework";
 import { EmbedBuilder } from "discord.js";
 
@@ -11,36 +13,39 @@ export default class extends Command {
 
     registerApplicationCommands(registry: Command.Registry) {
         registry.registerChatInputCommand((builder) =>
-            builder.setName("ping").setDescription("See bot statistics.")
+            builder
+                .setName("ping")
+                .setDescription("See DC Moderation's bot statistics.")
         );
     }
 
     async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
         // Fetching Message
-        const originalMessage = await interaction.reply({
+        const originalMessage = await interaction.deferReply({
             ephemeral: true,
-            content: "Fetching Data...",
             fetchReply: true,
         });
 
+        // Variables
+        const fu = moment.duration(interaction.client.uptime, "milliseconds");
+        const formattedUptime = `${fu.days()}d ${fu.hours()}h ${fu.minutes()}m ${fu.seconds()}s`;
+
+        // Database States
         const DB_States = [
             "Database not Connected.",
             "Database Connected.",
             "Connecting to Database.",
-            "Disconnesting from Database.",
+            "Disconnecting from Database.",
         ];
-
-        mongoose.connection.readyState;
 
         // Embed
         const pingEmbed = new EmbedBuilder()
             .setTitle("Moderation Ping Test")
+            .setColor("#ff304f")
             .addFields(
                 {
                     name: "⏱️ Uptime",
-                    value: `${Math.round(
-                        interaction.client.uptime / 60000
-                    )} Minutes`,
+                    value: `${formattedUptime}`,
                     inline: true,
                 },
                 {
@@ -67,11 +72,14 @@ export default class extends Command {
                     inline: true,
                 }
             )
-            .setColor("#ff304f");
+            .setFooter({
+                text: "DC Moderation",
+            })
+            .setTimestamp();
 
         return await interaction.editReply({
-            content: "",
             embeds: [pingEmbed],
         });
     }
 }
+

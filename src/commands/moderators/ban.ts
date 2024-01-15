@@ -68,7 +68,7 @@ export default class extends Command {
         }
 
         // More Variables
-        let selectedMember = currentGuild.members.cache.get(
+        const selectedMember = currentGuild.members.cache.get(
             selectedUser.id
         ) as GuildMember;
 

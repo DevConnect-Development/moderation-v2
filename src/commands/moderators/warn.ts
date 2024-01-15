@@ -5,7 +5,12 @@ import infractions from "../../util/schemas/moderation/infractions.js";
 import moment from "moment";
 
 import { Command } from "@sapphire/framework";
-import { PermissionFlagsBits, TextChannel, EmbedBuilder } from "discord.js";
+import {
+    PermissionFlagsBits,
+    GuildMember,
+    TextChannel,
+    EmbedBuilder,
+} from "discord.js";
 
 // Command
 export default class extends Command {
@@ -44,11 +49,7 @@ export default class extends Command {
 
         const selectedUser = interaction.options.getUser("user");
         const selectedReason = interaction.options.getString("reason");
-        const selectedProof = interaction.options.getAttachment("proof")
-
-        console.log(selectedProof?.url)
-
-        let selectedMember;
+        const selectedProof = interaction.options.getAttachment("proof");
 
         // Parameter Check
         if (!selectedUser || !selectedReason) {
@@ -56,11 +57,12 @@ export default class extends Command {
                 ephemeral: true,
                 content: "Interaction has failed.",
             });
-        } else {
-            selectedMember = currentGuild.members.cache.find(
-                (u) => u.id === selectedUser.id
-            );
         }
+
+        //More Variables
+        let selectedMember = currentGuild.members.cache.get(
+            selectedUser.id
+        ) as GuildMember;
 
         // Permissions Check
         if (
@@ -105,8 +107,11 @@ export default class extends Command {
         const modlogEmbed = new EmbedBuilder()
             .setTitle("New Infraction")
             .setAuthor({
-                name: `@${selectedUser.username} (${selectedUser.id})`,
-                iconURL: `${selectedUser.displayAvatarURL()}`,
+                name: `${selectedUser.username} (${selectedUser.id})`,
+                iconURL: `${
+                    selectedMember?.displayAvatarURL() ||
+                    selectedUser.displayAvatarURL()
+                }`,
             })
             .addFields(
                 {
@@ -143,7 +148,7 @@ export default class extends Command {
             });
 
             modlogEmbed.setFooter({
-                text: `(${newWarning.id})`,
+                text: `ID: ${newWarning.id}`,
             });
             fetchedModLogsChannel.send({
                 embeds: [modlogEmbed],
