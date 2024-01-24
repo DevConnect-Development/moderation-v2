@@ -61,7 +61,7 @@ export default class extends Listener {
         if (
             !currentEmbed.title ||
             !currentEmbed.title.includes("New release") ||
-            !currentEmbed.title.includes(`${process.env.GIT_REPO}`)
+            !currentEmbed.title.includes(`[${process.env.GIT_REPO}]`)
         ) {
             return;
         }
