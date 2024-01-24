@@ -15,7 +15,6 @@ import {
     EmbedBuilder,
 } from "discord.js";
 
-
 // Main Function
 export default class extends Listener {
     constructor(context: Listener.LoaderContext, options: Listener.Options) {
@@ -34,11 +33,9 @@ export default class extends Listener {
 
         // Bot Updates Channel
         const botReleases = await channelConfig.findOne({
-            guild_id: message.guild?.id,
-            channel_key: "bot_releases"
-        })
+            channel_key: "bot_releases",
+        });
         const botUpdates = await channelConfig.findOne({
-            guild_id: message.guild?.id,
             channel_key: "bot_updates",
         });
         const botUpdatesChannel = message.guild?.channels.cache.find(
@@ -61,7 +58,7 @@ export default class extends Listener {
         if (
             !currentEmbed.title ||
             !currentEmbed.title.includes("New release") ||
-            !currentEmbed.title.includes(`[${process.env.GIT_REPO}]`)
+            !currentEmbed.title.includes(`${process.env.GIT_REPO}`)
         ) {
             return;
         }
@@ -110,6 +107,6 @@ export default class extends Listener {
         });
 
         // Restart Bot
-        return process.exit(0)
+        return process.exit(0);
     }
 }
