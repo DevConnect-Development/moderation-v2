@@ -7,6 +7,7 @@ let infractionsSchema = new Schema({
     moderator: String,
 
     reason: String,
+    evidence: String,
     
     punishment_start: String,
     punishment_end: String,

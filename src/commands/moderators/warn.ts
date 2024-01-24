@@ -38,6 +38,14 @@ export default class extends Command {
                         .setDescription("The reason for the warning.")
                         .setRequired(true)
                 )
+                .addAttachmentOption((option) =>
+                    option
+                        .setName("proof")
+                        .setDescription(
+                            "Any proof that you have linked to the infraction."
+                        )
+                        .setRequired(true)
+                )
                 .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
         );
     }
@@ -52,7 +60,7 @@ export default class extends Command {
         const selectedProof = interaction.options.getAttachment("proof");
 
         // Parameter Check
-        if (!selectedUser || !selectedReason) {
+        if (!selectedUser || !selectedReason || !selectedProof) {
             return await interaction.reply({
                 ephemeral: true,
                 content: "Interaction has failed.",
@@ -125,6 +133,11 @@ export default class extends Command {
                     inline: true,
                 },
                 {
+                    name: "Proof",
+                    value: `[Attachment](${selectedProof.url})`,
+                    inline: true,
+                },
+                {
                     name: "Moderator",
                     value: `<@${interaction.user.id}>\n(${interaction.user.id})`,
                     inline: true,
@@ -142,6 +155,7 @@ export default class extends Command {
                 moderator: interaction.user.id,
 
                 reason: selectedReason,
+                evidence: selectedProof.url,
 
                 punishment_start: `${timestamp}`,
                 punishment_end: null,

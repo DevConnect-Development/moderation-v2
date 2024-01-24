@@ -1,0 +1,1 @@
+export { default as startUpdate } from "./lib/startUpdate.js"

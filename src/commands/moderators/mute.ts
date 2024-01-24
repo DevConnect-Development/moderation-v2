@@ -46,6 +46,14 @@ export default class extends Command {
                         .setDescription("The reason for the mute.")
                         .setRequired(true)
                 )
+                .addAttachmentOption((option) =>
+                    option
+                        .setName("proof")
+                        .setDescription(
+                            "Any proof that you have linked to the infraction."
+                        )
+                        .setRequired(true)
+                )
                 .setDefaultMemberPermissions(
                     PermissionFlagsBits.ModerateMembers
                 )
@@ -62,9 +70,15 @@ export default class extends Command {
         const selectedUser = interaction.options.getUser("user");
         const selectedTime = interaction.options.getString("time");
         const selectedReason = interaction.options.getString("reason");
+        const selectedProof = interaction.options.getAttachment("proof");
 
         // Parameter Check
-        if (!selectedUser || !selectedTime || !selectedReason) {
+        if (
+            !selectedUser ||
+            !selectedTime ||
+            !selectedReason ||
+            !selectedProof
+        ) {
             return await interaction.editReply("Interaction has failed.");
         }
 
@@ -176,6 +190,11 @@ export default class extends Command {
                     inline: true,
                 },
                 {
+                    name: "Proof",
+                    value: `[Attachment](${selectedProof.url})`,
+                    inline: true,
+                },
+                {
                     name: "Moderator",
                     value: `<@${interaction.user.id}>\n(${interaction.user.id})`,
                     inline: true,
@@ -200,6 +219,7 @@ export default class extends Command {
                 moderator: interaction.user.id,
 
                 reason: selectedReason,
+                evidence: selectedProof.url,
 
                 punishment_start: `${timestamp}`,
                 punishment_end: `${muteTimestamp}`,

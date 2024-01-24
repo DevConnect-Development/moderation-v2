@@ -29,6 +29,14 @@ export default class extends Command {
                             {
                                 name: "Moderation Logs",
                                 value: "modlogs",
+                            },
+                            {
+                                name: "Bot Updates",
+                                value: "bot_updates"
+                            },
+                            {
+                                name: "Bot Releases",
+                                value: "bot_releases"
                             }
                         )
                         .setRequired(true)
