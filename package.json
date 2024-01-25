@@ -1,6 +1,6 @@
 {
     "name": "dc-moderation-v2",
-    "version": "2.0.8",
+    "version": "2.0.9",
     "main": "./dist/index.js",
     "type": "module",
     "types": "./src/index.d.ts",
@@ -12,6 +12,7 @@
     "dependencies": {
         "@sapphire/discord.js-utilities": "^7.1.6",
         "@sapphire/framework": "^5.0.7",
+        "@sapphire/plugin-subcommands": "^6.0.3",
         "@types/fs-extra": "^11.0.4",
         "croner": "^8.0.0",
         "discord.js": "^14.14.1",

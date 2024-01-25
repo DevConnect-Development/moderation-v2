@@ -1,19 +1,35 @@
+// Env
+import { config } from "dotenv";
+config();
+
 // Dependencies
 import globalConfig from "../../config.js";
 
-import { Command } from "@sapphire/framework";
-import { PermissionFlagsBits } from "discord.js";
+import { Subcommand } from "@sapphire/plugin-subcommands";
+import { PermissionFlagsBits, REST, Routes } from "discord.js";
 
 // Command
-export default class extends Command {
-    constructor(context: Command.LoaderContext, options: Command.Options) {
+export default class extends Subcommand {
+    constructor(
+        context: Subcommand.LoaderContext,
+        options: Subcommand.Options
+    ) {
         super(context, {
             ...options,
-            preconditions: ["checkRanInGuild"],
+            subcommands: [
+                {
+                    name: "global",
+                    chatInputRun: "globalCommands",
+                },
+                {
+                    name: "guild",
+                    chatInputRun: "guildCommands",
+                },
+            ],
         });
     }
 
-    registerApplicationCommands(registry: Command.Registry) {
+    registerApplicationCommands(registry: Subcommand.Registry) {
         registry.registerChatInputCommand(
             (builder) => {
                 builder
@@ -21,6 +37,16 @@ export default class extends Command {
                     .setDescription("Reset all guild commands in the server.")
                     .setDefaultMemberPermissions(
                         PermissionFlagsBits.Administrator
+                    )
+                    .addSubcommand((option) =>
+                        option
+                            .setName("global")
+                            .setDescription("Remove all global commands.")
+                    )
+                    .addSubcommand((option) =>
+                        option
+                            .setName("guild")
+                            .setDescription("Remove all guild commands.")
                     );
             },
             {
@@ -29,7 +55,40 @@ export default class extends Command {
         );
     }
 
-    async chatInputRun(interaction: Command.ChatInputCommandInteraction) {
+    public async globalCommands(
+        interaction: Subcommand.ChatInputCommandInteraction
+    ) {
+        // Deferred Reply
+        const deferredReply = await interaction.deferReply({
+            ephemeral: true,
+        });
+
+        // Variables
+        const restClient = new REST().setToken(`${process.env.TOKEN}`);
+
+        // Remove Commands
+        await restClient
+            .put(Routes.applicationCommands(`${process.env.CLIENT_ID}`), {
+                body: [],
+            })
+            .catch(async (e) => {
+                return await interaction.editReply(
+                    "Failed to remove global commands."
+                );
+            });
+
+        // Return Reply
+        await interaction.editReply(
+            "Successfully removed global commands. Restarting the bot now."
+        );
+
+        // Exit
+        return process.exit(0)
+    }
+
+    public async guildCommands(
+        interaction: Subcommand.ChatInputCommandInteraction
+    ) {
         // Deferred Reply
         const deferredReply = await interaction.deferReply({
             ephemeral: true,
