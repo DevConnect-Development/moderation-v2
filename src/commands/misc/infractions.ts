@@ -45,6 +45,13 @@ export default class extends Command {
         let chosenUser = interaction.options.getUser("user");
         const newPagination = new PaginatedMessage();
 
+        const actionEmojis = {
+            Warning: "⚠️",
+            Mute: "🔇",
+            Ban: "🔨",
+            Softban: "🔨",
+        };
+
         // Permission Check
         if (!chosenUser) {
             chosenUser = interaction.user;
@@ -62,9 +69,7 @@ export default class extends Command {
 
         // Parameter Check
         if (!chosenUser) {
-            return await interaction.editReply(
-                "Interaction has failed."
-            );
+            return await interaction.editReply("Interaction has failed.");
         }
 
         // Get Infractions
@@ -73,12 +78,12 @@ export default class extends Command {
                 user: chosenUser.id,
             })
             .sort("-punishment_start");
+        const userInfractionsLength = userInfractions.length;
 
         // Infractions Check
         if (userInfractions.length < 1) {
             return await interaction.editReply({
-                content:
-                    "User has no infractions.",
+                content: "User has no infractions.",
                 components: [],
             });
         }
@@ -91,7 +96,7 @@ export default class extends Command {
             }
             return results;
         }
-        const infractionChunks = chunkArray(userInfractions, 3);
+        const infractionChunks = chunkArray(userInfractions, 4);
 
         // Set Pagination Actions
         newPagination.setActions([
@@ -126,31 +131,35 @@ export default class extends Command {
         // Loop Infractions
         infractionChunks.forEach(async (chunk) => {
             newPagination.addAsyncPageEmbed(async (embed) => {
+                const embedDescription = [];
+
                 for (const infraction of chunk) {
-                    const moderatorUser = interaction.guild.members.cache.find(
+                    const moderatorUser = interaction.client.users.cache.find(
                         (u) => u.id === infraction.moderator
                     );
 
+                    const infractionType = `${infraction.type}` as
+                        | "Warning"
+                        | "Mute"
+                        | "Ban"
+                        | "Softban";
                     const punishmentStart = `<t:${infraction.punishment_start}:f>`;
                     let punishmentEnd;
 
                     if (infraction.punishment_end !== null) {
-                        punishmentEnd = `- <t:${infraction.punishment_end}:f>`;
+                        punishmentEnd = `<t:${infraction.punishment_end}:f>`;
                     } else {
                         punishmentEnd = "";
                     }
 
-                    embed.addFields({
-                        name: `${infraction.type}`,
-                        value: [
-                            `ID: \`${infraction.id}\``,
-                            `Time: ${punishmentStart} ${punishmentEnd}`,
-                            `*Reason:* **${infraction.reason}**`,
-                            `*Moderator:* ${moderatorUser} (${
-                                moderatorUser!.id
-                            })`,
-                        ].join("\n"),
-                    });
+                    embedDescription.push([
+                        `**\`${actionEmojis[infractionType]}\` ${infractionType}** - ${punishmentStart}`,
+                        `\`${infraction.id}\`\n`,
+                        `Moderator: ${moderatorUser} (${infraction.moderator})`,
+                        infraction.evidence ? `Evidence: [Attachment](${infraction.evidence})` : "",
+                        punishmentEnd ? `Expires: ${punishmentEnd}` : "",
+                        `Reason: **${infraction.reason}**`,
+                    ].filter(Boolean).join("\n"));
                 }
 
                 embed
@@ -159,8 +168,9 @@ export default class extends Command {
                         iconURL: `${chosenUser!.displayAvatarURL()}`,
                     })
                     .setColor("Green")
+                    .setDescription(embedDescription.join("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"))
                     .setFooter({
-                        text: "Infractions Request",
+                        text: `${userInfractionsLength} Total Infractions`,
                     });
 
                 return embed;
