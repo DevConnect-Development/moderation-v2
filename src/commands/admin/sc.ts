@@ -1,4 +1,5 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import ChannelConfig from "../../util/schemas/config/channel.js";
 
 import { Command } from "@sapphire/framework";
@@ -14,45 +15,52 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("sc")
-                .setDescription("Set the channel for a specific key.")
-                .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-                .addStringOption((option) =>
-                    option
-                        .setName("key")
-                        .setDescription(
-                            "The key in which you would like to change the value of."
-                        )
-                        .addChoices(
-                            {
-                                name: "Moderation Logs",
-                                value: "modlogs",
-                            },
-                            {
-                                name: "Bot Updates",
-                                value: "bot_updates"
-                            },
-                            {
-                                name: "Bot Releases",
-                                value: "bot_releases"
-                            }
-                        )
-                        .setRequired(true)
-                )
-                .addChannelOption((option) =>
-                    option
-                        .setName("channel")
-                        .setDescription(
-                            "The channel that you would like to set for this key."
-                        )
-                        .addChannelTypes(
-                            ChannelType.GuildText,
-                            ChannelType.GuildForum
-                        )
-                        .setRequired(true)
-                )
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("sc")
+                    .setDescription("Set the channel for a specific key.")
+                    .setDefaultMemberPermissions(
+                        PermissionFlagsBits.Administrator
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("key")
+                            .setDescription(
+                                "The key in which you would like to change the value of."
+                            )
+                            .addChoices(
+                                {
+                                    name: "Moderation Logs",
+                                    value: "modlogs",
+                                },
+                                {
+                                    name: "Bot Updates",
+                                    value: "bot_updates",
+                                },
+                                {
+                                    name: "Bot Releases",
+                                    value: "bot_releases",
+                                }
+                            )
+                            .setRequired(true)
+                    )
+                    .addChannelOption((option) =>
+                        option
+                            .setName("channel")
+                            .setDescription(
+                                "The channel that you would like to set for this key."
+                            )
+                            .addChannelTypes(
+                                ChannelType.GuildText,
+                                ChannelType.GuildForum
+                            )
+                            .setRequired(true)
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 

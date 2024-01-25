@@ -1,6 +1,6 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import ChannelConfig from "../../util/schemas/config/channel.js";
-
 import { createUserSelect } from "../../util/services/UserService/index.js";
 
 import { Command } from "@sapphire/framework";
@@ -21,25 +21,32 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("unmute")
-                .setDescription("Remove the mute from a user")
-                .addUserOption((option) =>
-                    option
-                        .setName("user")
-                        .setDescription("The user you would like to unmute.")
-                        .setRequired(true)
-                )
-                .addStringOption((option) =>
-                    option
-                        .setName("reason")
-                        .setDescription("The reason for the unmute.")
-                        .setRequired(true)
-                )
-                .setDefaultMemberPermissions(
-                    PermissionFlagsBits.ModerateMembers
-                )
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("unmute")
+                    .setDescription("Remove the mute from a user")
+                    .addUserOption((option) =>
+                        option
+                            .setName("user")
+                            .setDescription(
+                                "The user you would like to unmute."
+                            )
+                            .setRequired(true)
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("reason")
+                            .setDescription("The reason for the unmute.")
+                            .setRequired(true)
+                    )
+                    .setDefaultMemberPermissions(
+                        PermissionFlagsBits.ModerateMembers
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 

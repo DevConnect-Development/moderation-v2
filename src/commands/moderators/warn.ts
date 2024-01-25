@@ -1,4 +1,5 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import channelConfig from "../../util/schemas/config/channel.js";
 import infractions from "../../util/schemas/moderation/infractions.js";
 
@@ -22,31 +23,38 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("warn")
-                .setDescription("Warn a user.")
-                .addUserOption((option) =>
-                    option
-                        .setName("user")
-                        .setDescription("The user you would like to warn.")
-                        .setRequired(true)
-                )
-                .addStringOption((option) =>
-                    option
-                        .setName("reason")
-                        .setDescription("The reason for the warning.")
-                        .setRequired(true)
-                )
-                .addAttachmentOption((option) =>
-                    option
-                        .setName("proof")
-                        .setDescription(
-                            "Any proof that you have linked to the infraction."
-                        )
-                        .setRequired(true)
-                )
-                .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("warn")
+                    .setDescription("Warn a user.")
+                    .addUserOption((option) =>
+                        option
+                            .setName("user")
+                            .setDescription("The user you would like to warn.")
+                            .setRequired(true)
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("reason")
+                            .setDescription("The reason for the warning.")
+                            .setRequired(true)
+                    )
+                    .addAttachmentOption((option) =>
+                        option
+                            .setName("proof")
+                            .setDescription(
+                                "Any proof that you have linked to the infraction."
+                            )
+                            .setRequired(true)
+                    )
+                    .setDefaultMemberPermissions(
+                        PermissionFlagsBits.ManageMessages
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 

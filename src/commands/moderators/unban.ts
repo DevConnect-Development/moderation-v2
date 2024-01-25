@@ -1,4 +1,5 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import ChannelConfig from "../../util/schemas/config/channel.js";
 import currentBans from "../../util/schemas/moderation/currentBans.js";
 
@@ -22,27 +23,32 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("unban")
-                .setDescription("Remove a user's ban.")
-                .addUserOption((option) =>
-                    option
-                        .setName("user")
-                        .setDescription(
-                            "The user you would like to remove the ban from."
-                        )
-                        .setRequired(true)
-                )
-                .addStringOption((option) =>
-                    option
-                        .setName("reason")
-                        .setDescription("The reason for the ban removal.")
-                        .setRequired(true)
-                )
-                .setDefaultMemberPermissions(
-                    PermissionFlagsBits.ModerateMembers
-                )
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("unban")
+                    .setDescription("Remove a user's ban.")
+                    .addUserOption((option) =>
+                        option
+                            .setName("user")
+                            .setDescription(
+                                "The user you would like to remove the ban from."
+                            )
+                            .setRequired(true)
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("reason")
+                            .setDescription("The reason for the ban removal.")
+                            .setRequired(true)
+                    )
+                    .setDefaultMemberPermissions(
+                        PermissionFlagsBits.ModerateMembers
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 
@@ -138,7 +144,7 @@ export default class extends Command {
             await currentGuild.members
                 .unban(selectedUser.id, selectedReason)
                 .catch(async (e) => {
-                    return await interaction.editReply("Failed to unban user.")
+                    return await interaction.editReply("Failed to unban user.");
                 });
 
             // Return Reply

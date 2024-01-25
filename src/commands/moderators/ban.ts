@@ -1,4 +1,5 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import ChannelConfig from "../../util/schemas/config/channel.js";
 import infractions from "../../util/schemas/moderation/infractions.js";
 import currentBans from "../../util/schemas/moderation/currentBans.js";
@@ -22,39 +23,44 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("ban")
-                .setDescription("Ban a user.")
-                .addUserOption((option) =>
-                    option
-                        .setName("user")
-                        .setDescription("The user you would like to ban.")
-                        .setRequired(true)
-                )
-                .addStringOption((option) =>
-                    option
-                        .setName("time")
-                        .setDescription("The time for the ban.")
-                        .setRequired(true)
-                )
-                .addStringOption((option) =>
-                    option
-                        .setName("reason")
-                        .setDescription("The reason for the ban.")
-                        .setRequired(true)
-                )
-                .addAttachmentOption((option) =>
-                    option
-                        .setName("proof")
-                        .setDescription(
-                            "Any proof that you have linked to the infraction."
-                        )
-                        .setRequired(true)
-                )
-                .setDefaultMemberPermissions(
-                    PermissionFlagsBits.ModerateMembers
-                )
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("ban")
+                    .setDescription("Ban a user.")
+                    .addUserOption((option) =>
+                        option
+                            .setName("user")
+                            .setDescription("The user you would like to ban.")
+                            .setRequired(true)
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("time")
+                            .setDescription("The time for the ban.")
+                            .setRequired(true)
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("reason")
+                            .setDescription("The reason for the ban.")
+                            .setRequired(true)
+                    )
+                    .addAttachmentOption((option) =>
+                        option
+                            .setName("proof")
+                            .setDescription(
+                                "Any proof that you have linked to the infraction."
+                            )
+                            .setRequired(true)
+                    )
+                    .setDefaultMemberPermissions(
+                        PermissionFlagsBits.ModerateMembers
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 

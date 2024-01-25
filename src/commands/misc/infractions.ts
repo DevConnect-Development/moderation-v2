@@ -1,4 +1,5 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import infractions from "../../util/schemas/moderation/infractions.js";
 
 import { Command } from "@sapphire/framework";
@@ -12,16 +13,23 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("infractions")
-                .setDescription("Check infractions.")
-                .addUserOption((option) =>
-                    option
-                        .setName("user")
-                        .setDescription("The user to check infractions for.")
-                        .setRequired(false)
-                )
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("infractions")
+                    .setDescription("Check infractions.")
+                    .addUserOption((option) =>
+                        option
+                            .setName("user")
+                            .setDescription(
+                                "The user to check infractions for."
+                            )
+                            .setRequired(false)
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 
@@ -152,14 +160,20 @@ export default class extends Command {
                         punishmentEnd = "";
                     }
 
-                    embedDescription.push([
-                        `**\`${actionEmojis[infractionType]}\` ${infractionType}** - ${punishmentStart}`,
-                        `\`${infraction.id}\`\n`,
-                        `Moderator: ${moderatorUser} (${infraction.moderator})`,
-                        infraction.evidence ? `Evidence: [Attachment](${infraction.evidence})` : "",
-                        punishmentEnd ? `Expires: ${punishmentEnd}` : "",
-                        `Reason: **${infraction.reason}**`,
-                    ].filter(Boolean).join("\n"));
+                    embedDescription.push(
+                        [
+                            `**\`${actionEmojis[infractionType]}\` ${infractionType}** - ${punishmentStart}`,
+                            `\`${infraction.id}\`\n`,
+                            `Moderator: ${moderatorUser} (${infraction.moderator})`,
+                            infraction.evidence
+                                ? `Evidence: [Attachment](${infraction.evidence})`
+                                : "",
+                            punishmentEnd ? `Expires: ${punishmentEnd}` : "",
+                            `Reason: **${infraction.reason}**`,
+                        ]
+                            .filter(Boolean)
+                            .join("\n")
+                    );
                 }
 
                 embed
@@ -168,7 +182,11 @@ export default class extends Command {
                         iconURL: `${chosenUser!.displayAvatarURL()}`,
                     })
                     .setColor("Green")
-                    .setDescription(embedDescription.join("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"))
+                    .setDescription(
+                        embedDescription.join(
+                            "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                        )
+                    )
                     .setFooter({
                         text: `${userInfractionsLength} Total Infractions`,
                     });

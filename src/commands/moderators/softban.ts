@@ -1,4 +1,5 @@
 // Dependencies
+import globalConfig from "../../config.js";
 import ChannelConfig from "../../util/schemas/config/channel.js";
 import infractions from "../../util/schemas/moderation/infractions.js";
 
@@ -23,27 +24,32 @@ export default class extends Command {
     }
 
     registerApplicationCommands(registry: Command.Registry) {
-        registry.registerChatInputCommand((builder) =>
-            builder
-                .setName("softban")
-                .setDescription(
-                    "Softban a user, and delete all their messages."
-                )
-                .addUserOption((option) =>
-                    option
-                        .setName("user")
-                        .setDescription("The user you would like to ban.")
-                        .setRequired(true)
-                )
-                .addStringOption((option) =>
-                    option
-                        .setName("reason")
-                        .setDescription("The reason for the ban.")
-                        .setRequired(true)
-                )
-                .setDefaultMemberPermissions(
-                    PermissionFlagsBits.ModerateMembers
-                )
+        registry.registerChatInputCommand(
+            (builder) => {
+                builder
+                    .setName("softban")
+                    .setDescription(
+                        "Softban a user, and delete all their messages."
+                    )
+                    .addUserOption((option) =>
+                        option
+                            .setName("user")
+                            .setDescription("The user you would like to ban.")
+                            .setRequired(true)
+                    )
+                    .addStringOption((option) =>
+                        option
+                            .setName("reason")
+                            .setDescription("The reason for the ban.")
+                            .setRequired(true)
+                    )
+                    .setDefaultMemberPermissions(
+                        PermissionFlagsBits.ModerateMembers
+                    );
+            },
+            {
+                guildIds: globalConfig.allowedGuilds,
+            }
         );
     }
 
