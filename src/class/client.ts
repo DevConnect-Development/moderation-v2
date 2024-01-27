@@ -14,14 +14,6 @@ export default class extends SapphireClient {
         super({
             intents: [Object.keys(GatewayIntentBits) as any],
             partials: [Object.keys(Partials) as any],
-            presence: {
-                activities: [
-                    {
-                        type: ActivityType.Watching,
-                        name: "for rule breakers!",
-                    },
-                ],
-            },
         });
     }
 
